@@ -6,11 +6,13 @@ const products = [
     stock :  10,
     colors:  { yellow: {
       'img': 'https://gearmoose.com/wp-content/uploads/2019/11/Topo-Designs-Dual-Pant.jpg',
-        'stock': 5
+        'stock': 5,
+        selectedStock: 0
       }, 
         grey: {
           'img': 'https://gearmoose.com/wp-content/uploads/2019/08/Proof-Rover-Pants.jpg',
-          'stock': 5
+          'stock': 5,
+          selectedStock: 0
         }},
     price: 11.59,
     selectedColor: 'yellow'
@@ -22,11 +24,13 @@ const products = [
     stock :  9,
     colors:  { blue: {
     'img': 'https://cms.cloudinary.vpsvc.com//image/fetch/q_auto:eco,w_700,f_auto,dpr_auto/https://s3-eu-west-1.amazonaws.com/sitecore-media-bucket/prod%2fen%2f%7b41ED0F83-1DC4-4568-B273-4DBCCE756419%7d',
-      'stock': 4
+      'stock': 4,
+      selectedStock: 0
     }, 
       black: {
         'img': 'https://rendering.documents.cimpress.io/v1/vp/preview?scene=https://scene.products.cimpress.io/v1/scenes/3dba1cd7-7694-4313-aab9-1d0754b868c7&width=690&height=690&quality=80',
-        'stock': 5
+        'stock': 5,
+        selectedStock: 0
       }},
     price: 17.59,
     selectedColor: 'blue'
@@ -38,11 +42,13 @@ const products = [
     stock :  12,
     colors:  { red: {
       'img': 'https://www.bluemint.com/content/images/thumbs/021/0215341_EDWARD_1200.jpeg',
-      'stock': 7
+      'stock': 7,
+      selectedStock: 0
     }, 
       pink: {
         'img': 'https://www.bluemint.com/content/images/thumbs/001/0011120_edward_1200.jpeg',
-        'stock': 5
+        'stock': 5,
+        selectedStock: 0
       }},
     price: 8.19,
     selectedColor: 'red'
@@ -54,14 +60,16 @@ const products = [
     stock :  6,
     colors:  { blue: {
       'img': 'https://cdn.shopify.com/s/files/1/0260/8116/5402/products/product-image-1391418096_2000x.jpg?v=1595519030',
-      'stock': 3
+      'stock': 3,
+      selectedStock: 0    
     }, 
       grey: {
         'img': 'https://cdn.shopify.com/s/files/1/0260/8116/5402/products/product-image-1391418095_2000x.jpg?v=1595519030',
-        'stock': 3
+        'stock': 3,
+        selectedStock: 0    
       }},
     price: 1.59,
-    selectedColor: 'blue'    
+    selectedColor: 'blue'
   }, 
   {
     id : '5',
@@ -70,27 +78,31 @@ const products = [
     stock :  7,
     colors:  { orange: {
       'img': 'https://cdn.kobisi.com/cdn/image/546/4596116/1/1200/1200/maxi-stitch-skirt-orange.jpg?v=20191127225226',
-      'stock': 3
+      'stock': 3,
+      selectedStock: 0
     }, 
       yellow: {
         'img': 'https://cdn.kobisi.com/cdn/image/546/4559717/1/1200/1200/zigzagged-stitch-skirt-black.jpg',
-        'stock': 4
+        'stock': 4,
+        selectedStock: 0
       }},
     price: 7.59,
     selectedColor: 'orange'    
   }, 
   {
     id : '6',
-    name: 'glasses',
+    name: 'glass',
     category : 'accessories',
     stock :  8,
     colors:  { red: {
       'img': 'https://ktnimg.mncdn.com/mnresize/868/1140/product-images/9KAK95028AA421/1500Wx1969H/9KAK95028AA421_G02_zoom2_V03.jpg',
-      'stock': 4
+      'stock': 4,
+      selectedStock: 0
     }, 
       black: {
         'img': 'https://ktnimg.mncdn.com/mnresize/868/1140/product-images/9KAK95028AA999/1500Wx1969H/9KAK95028AA999_G01_zoom1_V02.jpg',
-        'stock': 4
+        'stock': 4,
+        selectedStock: 0
       }},
     price: 3.56,
     selectedColor: 'red'
@@ -139,11 +151,12 @@ renderShoppingProducts();
 function chooseOneColor(e){
   const element = e.target.parentElement;
   const id = element.dataset.id;
+  
   let selectingItem = products.find( item => {
     return id === item.id
   })
-  selectingItem.selectedColor =   e.target.value;
-  console.log(selectingItem.colors[selectingItem.selectedColor].img)
+  selectingItem.selectedColor = e.target.value;
+ 
   renderShoppingProducts()
 }
 
@@ -158,11 +171,15 @@ function renderSelectingItems(){
     element.innerHTML = `
     <img src=${item.colors[item.selectedColor].img} alt=${item.name} style="width: 100px; height: 100px;">
      <h1>${item.name}</h1>
-     <h2>color : ${item.selectedColor} </h2>
-     <h3>Price: $${item.price}</h3>
-     <h4>Quantity: ${item.stock} </h4>
+      ${Object.keys(item.colors).map(color =>{
+        return `<h2>${color} :
+          ${item.colors[color].selectedStock}
+        </h2>`
+     }).join('')}
+     <h3>Price: $${(item.price * item.colors[item.selectedColor].selectedStock).toFixed(2)}</h3>
+     <h4>Quantity: ${item.colors[item.selectedColor].selectedStock}</h4>
       `
-    
+      console.log(item.colors[item.selectedColor].selectedStock)
      storingItems.appendChild(element)
   })
   renderShoppingProducts()
@@ -172,29 +189,31 @@ renderSelectingItems()
 
 function buyingItems(e){
   const element = e.currentTarget.parentElement.parentElement;
-  
   const id = element.dataset.id;
   let selectingIdenticalItem;
   let findingItem =  products.find( item => {
     return id === item.id;
     })
+  
    
     selectingIdenticalItem = renderingArrayOfItems.find( item =>{
     return id === item.id
   })
   if(selectingIdenticalItem){
-    selectingIdenticalItem.stock++;
+    selectingIdenticalItem.colors[findingItem.selectedColor].selectedStock++
+    console.log(selectingIdenticalItem.colors[findingItem.selectedColor].selectedStock)
+  
     
   } else {
     let selectedOperator = {...findingItem};
   
     renderingArrayOfItems.push(selectedOperator)    
-    selectedOperator.stock = 1;
-    
+    selectedOperator.colors[selectedOperator.selectedColor].selectedStock= 1;
+  
   }
   findingItem.stock--;
-  console.log(findingItem.stock)
- 
+
+  
  
   renderSelectingItems();
   renderShoppingProducts()

@@ -185,12 +185,16 @@ function renderSelectingItems() {
     element.classList.add('products')
     element.setAttribute('data-id', item.id)
     element.innerHTML = `
-    <img src=${item.colors[item.selectedColor].img} alt=${item.name} style="width: 100px; height: 100px;">
+    <img src= ${item.colors[item.selectedColor].img} alt=${item.name} style="width: 100px; height: 100px;">
       <h1>${item.name}</h1>
       ${Object.keys(item.colors).map(color => {
-      return `<h2>${color} :
+      if (item.colors[color].selectedStock <= 0) {
+        return ''
+      } else {
+        return `<h2>${color} :
           ${item.colors[color].selectedStock}
         </h2>`
+      }
     }).join('')}
      <h3>Price: $${(item.price * item.colors[item.selectedColor].selectedStock).toFixed(2)}</h3>
     <h4>Quantity: ${sum} </h4>
@@ -217,7 +221,7 @@ function buyingItems(e) {
   })
   if (selectingIdenticalItem) {
     selectingIdenticalItem.colors[findingItem.selectedColor].selectedStock++
-    console.log(selectingIdenticalItem.colors[findingItem.selectedColor].selectedStock)
+    console.log(selectingIdenticalItem.colors[findingItem.selectedColor])
 
 
   } else {
@@ -225,6 +229,7 @@ function buyingItems(e) {
 
     renderingArrayOfItems.push(selectedOperator)
     selectedOperator.colors[selectedOperator.selectedColor].selectedStock = 1;
+
 
   }
   findingItem.stock--;

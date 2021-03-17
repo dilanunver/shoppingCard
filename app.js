@@ -192,13 +192,16 @@ function renderSelectingItems() {
         return ''
       } else {
         return `<h2>${color} :
-          ${item.colors[color].selectedStock}
+          ${item.colors[color].selectedStock} <button button type = 'button' class='deleteBtn' > Delete</button >
         </h2>`
+
       }
     }).join('')}
      <h3>Price: $${(item.price * item.colors[item.selectedColor].selectedStock).toFixed(2)}</h3>
     <h4>Quantity: ${sum} </h4>
       `
+    const deleteBtn = element.querySelectorAll('.deleteBtn');
+    deleteBtn.forEach(deleteItems);
 
     storingItems.appendChild(element)
   })
@@ -206,7 +209,22 @@ function renderSelectingItems() {
 }
 renderSelectingItems()
 
-
+function deleteItems(e) {
+  e.addEventListener('click', deleteItem)
+}
+function deleteItem(e) {
+  const element = e.currentTarget.parentElement.parentElement;
+  const id = element.dataset.id;
+  let selectedDeletingItem = renderingArrayOfItems.find(item => {
+    return id === item.id
+  })
+  console.log(selectedDeletingItem.colors[selectedDeletingItem.selectedColor].selectedStock)
+  let findingDeletingItem = selectedDeletingItem.colors[selectedDeletingItem.selectedColor].selectedStock;
+  let result = renderingArrayOfItems.splice(findingDeletingItem, 1)
+  console.log(result)
+  renderSelectingItems();
+  renderShoppingProducts();
+}
 function buyingItems(e) {
   const element = e.currentTarget.parentElement.parentElement;
   const id = element.dataset.id;

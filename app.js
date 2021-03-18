@@ -122,6 +122,7 @@ const products = [
 ]
 
 let renderingArrayOfItems = [];
+let buttonId;
 const storingItems = document.querySelector('.storing-items');
 const shoppingHolder = document.querySelector('.shopping-holder');
 
@@ -192,14 +193,16 @@ function renderSelectingItems() {
         return ''
       } else {
         return `<h2>${color} :
-          ${item.colors[color].selectedStock} <button button type = 'button' class='deleteBtn' > Delete</button >
+          ${item.colors[color].selectedStock} <button button data-color=${color} type = 'button' class='deleteBtn' > Delete</button >
         </h2>`
 
       }
     }).join('')}
-     <h3>Price: $${(item.price * item.colors[item.selectedColor].selectedStock).toFixed(2)}</h3>
+     <h3>Price: $${(item.price * sum).toFixed(2)}</h3>
     <h4>Quantity: ${sum} </h4>
       `
+    console.log(item.colors)
+
     const deleteBtn = element.querySelectorAll('.deleteBtn');
     deleteBtn.forEach(deleteItems);
 
@@ -215,13 +218,15 @@ function deleteItems(e) {
 function deleteItem(e) {
   const element = e.currentTarget.parentElement.parentElement;
   const id = element.dataset.id;
+  const colorId = e.currentTarget.dataset.color;
+  buttonId = colorId;
+  console.log(colorId)
   let selectedDeletingItem = renderingArrayOfItems.find(item => {
-    return id === item.id
+    return item.id === id
   })
-  console.log(selectedDeletingItem.colors[selectedDeletingItem.selectedColor].selectedStock)
-  let findingDeletingItem = selectedDeletingItem.colors[selectedDeletingItem.selectedColor].selectedStock;
-  let result = renderingArrayOfItems.splice(findingDeletingItem, 1)
-  console.log(result)
+  console.log(selectedDeletingItem.colors[colorId])
+  let findingDeletingItem = selectedDeletingItem.colors[colorId].selectedStock--;
+  console.log(findingDeletingItem)
   renderSelectingItems();
   renderShoppingProducts();
 }

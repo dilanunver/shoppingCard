@@ -4,6 +4,7 @@ const products = [
     name: 'pant',
     category: 'outerwear',
     stock: 10,
+    bought: 0,
     colors: {
       yellow: {
         'img': 'https://gearmoose.com/wp-content/uploads/2019/11/Topo-Designs-Dual-Pant.jpg',
@@ -24,6 +25,7 @@ const products = [
     name: 'shirt',
     category: 'top',
     stock: 9,
+    bought: 0,
     colors: {
       blue: {
         'img': 'https://cms.cloudinary.vpsvc.com//image/fetch/q_auto:eco,w_700,f_auto,dpr_auto/https://s3-eu-west-1.amazonaws.com/sitecore-media-bucket/prod%2fen%2f%7b41ED0F83-1DC4-4568-B273-4DBCCE756419%7d',
@@ -44,6 +46,7 @@ const products = [
     name: 't-shirt',
     category: 'top',
     stock: 12,
+    bought: 0,
     colors: {
       red: {
         'img': 'https://www.bluemint.com/content/images/thumbs/021/0215341_EDWARD_1200.jpeg',
@@ -64,6 +67,7 @@ const products = [
     name: 'hat',
     category: 'accessories',
     stock: 6,
+    bought: 0,
     colors: {
       blue: {
         'img': 'https://cdn.shopify.com/s/files/1/0260/8116/5402/products/product-image-1391418096_2000x.jpg?v=1595519030',
@@ -84,6 +88,7 @@ const products = [
     name: 'skirt',
     category: 'outerwear',
     stock: 7,
+    bought: 0,
     colors: {
       orange: {
         'img': 'https://cdn.kobisi.com/cdn/image/546/4596116/1/1200/1200/maxi-stitch-skirt-orange.jpg?v=20191127225226',
@@ -104,6 +109,7 @@ const products = [
     name: 'glass',
     category: 'accessories',
     stock: 8,
+    bought: 0,
     colors: {
       red: {
         'img': 'https://ktnimg.mncdn.com/mnresize/868/1140/product-images/9KAK95028AA421/1500Wx1969H/9KAK95028AA421_G02_zoom2_V03.jpg',
@@ -122,7 +128,6 @@ const products = [
 ]
 
 let renderingArrayOfItems = [];
-let buttonId;
 const storingItems = document.querySelector('.storing-items');
 const shoppingHolder = document.querySelector('.shopping-holder');
 
@@ -178,10 +183,8 @@ function renderSelectingItems() {
   storingItems.innerHTML = '';
   renderingArrayOfItems.forEach(item => {
     const element = document.createElement('div');
-    let sum = 0;
-    Object.values(item.colors).forEach(color => {
-      sum += color.selectedStock
-    })
+
+
     element.style.cssText = 'padding: 15px;'
     element.classList.add('products')
     element.setAttribute('data-id', item.id)
@@ -192,16 +195,17 @@ function renderSelectingItems() {
       if (item.colors[color].selectedStock <= 0) {
         return ''
       } else {
+        console.log(item.colors[color].selectedStock)
         return `<h2>${color} :
           ${item.colors[color].selectedStock} <button button data-color=${color} type = 'button' class='deleteBtn' > Delete</button >
         </h2>`
 
       }
     }).join('')}
-     <h3>Price: $${(item.price * sum).toFixed(2)}</h3>
-    <h4>Quantity: ${sum} </h4>
+     <h3>Price: $${(item.price * item.bought).toFixed(2)}</h3>
+    <h4>Quantity: ${item.bought} </h4>
       `
-    console.log(item.colors)
+
 
     const deleteBtn = element.querySelectorAll('.deleteBtn');
     deleteBtn.forEach(deleteItems);
@@ -219,17 +223,26 @@ function deleteItem(e) {
   const element = e.currentTarget.parentElement.parentElement;
   const id = element.dataset.id;
   const colorId = e.currentTarget.dataset.color;
-  buttonId = colorId;
+
   console.log(colorId)
   let selectedDeletingItem = renderingArrayOfItems.find(item => {
     return item.id === id
   })
   console.log(selectedDeletingItem.colors[colorId])
-  let findingDeletingItem = selectedDeletingItem.colors[colorId].selectedStock--;
-  console.log(findingDeletingItem)
+  selectedDeletingItem.bought--;
+  selectedDeletingItem.colors[colorId].selectedStock--
+  if (selectedDeletingItem.bought === 0) {
+    let deletingItem = renderingArrayOfItems.indexOf(selectedDeletingItem)
+    console.log(deletingItem);
+    renderingArrayOfItems.splice(deletingItem, 1)
+  }
+
+
+
   renderSelectingItems();
   renderShoppingProducts();
 }
+console.log(renderingArrayOfItems)
 function buyingItems(e) {
   const element = e.currentTarget.parentElement.parentElement;
   const id = element.dataset.id;
@@ -243,8 +256,9 @@ function buyingItems(e) {
     return id === item.id
   })
   if (selectingIdenticalItem) {
-    selectingIdenticalItem.colors[findingItem.selectedColor].selectedStock++
-    console.log(selectingIdenticalItem.colors[findingItem.selectedColor])
+    selectingIdenticalItem.colors[findingItem.selectedColor].selectedStock++;
+    selectingIdenticalItem.bought++;
+
 
 
   } else {
@@ -252,10 +266,11 @@ function buyingItems(e) {
 
     renderingArrayOfItems.push(selectedOperator)
     selectedOperator.colors[selectedOperator.selectedColor].selectedStock = 1;
-
+    selectedOperator.bought = 1;
 
   }
   findingItem.stock--;
+
 
 
 

@@ -151,7 +151,7 @@ function renderShoppingProducts() {
      </select>
      <h3>Price: $${item.price}</h3>
      <h4>Stock: ${item.colors[item.selectedColor].stock}
-     ${item.stock <= 0 ?
+     ${item.colors[item.selectedColor].stock <= 0 ?
         `<button type="button" class="buyButton" disabled >Buy</button>` :
         `<button type="button" class="buyButton" style="cursor: pointer;">Buy</button>`}</h4> 
      <h5>Category : ${item.category}</h5>
@@ -242,7 +242,7 @@ function deleteItem(e) {
   renderSelectingItems();
   renderShoppingProducts();
 }
-console.log(renderingArrayOfItems)
+
 function buyingItems(e) {
   const element = e.currentTarget.parentElement.parentElement;
   const id = element.dataset.id;
@@ -269,8 +269,8 @@ function buyingItems(e) {
     selectedOperator.bought = 1;
 
   }
-  findingItem.stock--;
 
+  findingItem.colors[findingItem.selectedColor].stock--;
 
 
 
